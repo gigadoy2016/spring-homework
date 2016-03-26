@@ -1,0 +1,67 @@
+<#include "header.html">
+
+<div class="container" id="my-component"></div>
+<script type="text/babel">
+var MyComponent = React.createClass({
+	render: function() {
+		var table = [];
+		for (var i = 0; i < this.state.result.length; i++) {
+			var value = this.state.result[i];
+			table.push(<li>{value.suburb} - {value.address}</li>);
+		}
+
+		return (
+			<div>
+				<form onSubmit={this.search}>
+					<input type='text'
+						value={this.state.text}
+						onChange={this.onChange}
+						className="form-control"
+						placeholder="Search"
+						autofocus="autofocus"
+					/>
+					<input type='submit' value='Search'
+						className="btn btn-primary"
+						onClick={this.search}
+					/>
+				</form>
+				<ul>{table}</ul>
+			</div>
+		);
+	},
+
+	onChange: function(e) {
+		this.setState({
+			text: e.target.value
+		});
+	},
+
+	search: function(e) {
+		e.preventDefault();
+		fetch('/search-ajax-result?data=' + this.state.text)
+		.then(function(response) {
+			return response.json();
+		})
+		.then(this.show);
+	},
+
+	show: function(data) {
+		console.table(data);
+		this.setState({result: data});
+	},
+
+	getInitialState: function() {
+		return { text: '', result: []};
+	}
+});
+
+ReactDOM.render(<MyComponent />,
+	document.getElementById("my-component")
+);
+</script>
+
+<script src="/js/react.js"></script>
+<script src="/js/react-dom.js"></script>
+<script src="/js/babel.js"></script>
+
+<#include "footer.html">

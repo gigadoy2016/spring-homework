@@ -1,0 +1,49 @@
+<#include "header.html">
+
+<div class="container">
+	<my-component></my-component>
+</div>
+
+<script src="/js/angular2.sfx.js"></script>
+<script>
+var MyComponent = ng
+.Component({
+	selector: 'my-component',
+	styles: ['input { margin-top: 10px; }'],
+	template: `
+		<input type='text' class='form-control'
+			autofocus="autofocus" placeholder="Search"
+			#query (keyup.enter)="search(query.value)"
+			(keyup)="change(query.value)" />
+		<input type="submit" value="Search" class="btn btn-primary"
+			(click)="search(query.value)" />
+		<ul>
+			<li *ng-for="#item of data">
+				{{ item.suburb }} - {{ item.address }}
+			</li>
+		<ul>
+	`
+})
+.Class({
+	constructor: function() {
+		this.name = 'Angular';
+	},
+	search: function(query) {
+		fetch("/search-ajax-result?data=" + query)
+		.then(response => response.json())
+		.then(data => this.data = data);
+	},
+	change: function(query) {
+		if (query.length >= 3) {
+			this.search(query);
+		} else {
+			this.data = [];
+		}
+	}
+});
+
+ng.bootstrap(MyComponent);
+</script>
+
+
+<#include "footer.html">
